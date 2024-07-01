@@ -14,8 +14,8 @@ export default function CodeForm() {
 
   return (
     <form action={formAction} className="h-full overflow-hidden flex flex-col gap-4">
-      <div className="rounded-2xl p-10 bg-blue-300 flex flex-col gap-4" style={{ height: "64%" }}>
-        <h2>Code</h2>
+      <div className="rounded-xl p-4 bg-white flex flex-col" style={{ height: "64%" }}>
+        <h2 className="text-xl mb-2">Code</h2>
 
         <div style={{ overflow: "auto" }} className="h-auto">
           <CodeEditor
@@ -30,16 +30,18 @@ export default function CodeForm() {
           />
         </div>
 
-        <Button type="submit">Run Code</Button>
+        <Button type="submit" className="mt-4">Run Code</Button>
       </div>
 
-      <ScrollArea className="rounded-2xl p-4 bg-white h-1/3 overflow-hidden">
+      <ScrollArea className="rounded-xl p-4 bg-white h-1/3 overflow-hidden">
         <h2 className="text-xl">Output</h2>
-        <div className="p-3 bg-gray-100 rounded-lg text-sm my-3">
-          <p className="whitespace-pre text-wrap" style={{fontFamily: "Menlo, sans-serif"}}>
-            {state.output}
-          </p>
-        </div>
+        {state.output &&
+          <div className="p-3 bg-gray-100 rounded-lg text-sm my-3">
+            <p className="whitespace-pre text-wrap" style={{fontFamily: "Menlo, sans-serif"}}>
+              {state.output}
+            </p>
+          </div>
+        }
       </ScrollArea>
     </form>
   );
