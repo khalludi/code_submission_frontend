@@ -1,9 +1,10 @@
 'use client';
 
-import React, {useState} from "react";
+import React from "react";
 import { useFormState } from 'react-dom';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import {Button} from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {runCode} from "@/app/actions";
 
 const initialState = { output: '', }
@@ -32,10 +33,14 @@ export default function CodeForm() {
         <Button type="submit">Run Code</Button>
       </div>
 
-      <div className="rounded-2xl p-10 bg-amber-500 h-1/3">
-        <h2>Output</h2>
-        <p className="whitespace-pre text-wrap">{state.output}</p>
-      </div>
+      <ScrollArea className="rounded-2xl p-4 bg-white h-1/3 overflow-hidden">
+        <h2 className="text-xl">Output</h2>
+        <div className="p-3 bg-gray-100 rounded-lg text-sm my-3">
+          <p className="whitespace-pre text-wrap" style={{fontFamily: "Menlo, sans-serif"}}>
+            {state.output}
+          </p>
+        </div>
+      </ScrollArea>
     </form>
   );
 }
