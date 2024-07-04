@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { runCode } from "@/app/actions";
 import CodeText from "@/components/CodeText";
 import dynamic from "next/dynamic";
+import { TEST_CASES } from "@/lib/data";
 
 const CodeEditor = dynamic(
   () => import("@uiw/react-textarea-code-editor").then((mod) => mod.default),
@@ -22,7 +23,7 @@ export default function CodeForm() {
   const [state, formAction] = useFormState(runCode, initialState);
   const [isLoading, setIsLoading] = useState(false);
   const [tab, setTab] = useState<TabState>("testcase");
-  const [testCaseTab, setTestCaseTab] = useState<TestCaseTab>("case1");
+  const [testCaseTab, setTestCaseTab] = useState<number>(0);
   const [code, setCode] = useState(
     "class Solution:" +
       "\n  def solve(self, numCourses, prerequisites):" +
@@ -90,42 +91,53 @@ export default function CodeForm() {
         </div>
 
         <div className="px-4 pt-1 h-full">
-          {tab === "testcase" && (
-            <div className="flex flex-col">
-              <div className="flex flex-row gap-2">
-                <button
-                  className={`text-sm ${testCaseTab === "case1" ? "font-semibold bg-gray-200 px-2 py-1 rounded-lg" : ""}`}
-                  onClick={() => setTestCaseTab("case1")}
-                >
-                  Case 1
-                </button>
-                <button
-                  className={`text-sm ${testCaseTab === "case2" ? "font-semibold bg-gray-200 px-2 py-1 rounded-lg" : ""}`}
-                  onClick={() => setTestCaseTab("case2")}
-                >
-                  Case 2
-                </button>
-              </div>
-
-              {testCaseTab === "case1" && (
-                <>
-                  <p className={"text-gray-600 text-xs mt-2"}>numCourses = </p>
-                  <CodeText className="mt-1">2</CodeText>
-                  <p className="text-gray-500 text-xs mt-2">prerequisites =</p>
-                  <CodeText className="mt-1">[[1, 0]]</CodeText>
-                </>
-              )}
-
-              {testCaseTab === "case2" && (
-                <>
-                  <p className={"text-gray-600 text-xs mt-2"}>numCourses = </p>
-                  <CodeText className="mt-1">2</CodeText>
-                  <p className="text-gray-500 text-xs mt-2">prerequisites =</p>
-                  <CodeText className="mt-1">[[1, 0], [0, 1]]</CodeText>
-                </>
-              )}
+          <div
+            className={`flex flex-col ${tab !== "testcase" ? "hidden" : ""}`}
+          >
+            <div className="flex flex-row gap-2">
+              {TEST_CASES.map((_, index) => {
+                return (
+                  <button
+                    key={`test_case_${index}`}
+                    className={`text-sm ${testCaseTab === index ? "font-semibold bg-gray-200 px-2 py-1 rounded-lg" : ""}`}
+                    onClick={() => setTestCaseTab(index)}
+                    type="button"
+                  >
+                    Case {index + 1}
+                  </button>
+                );
+              })}
             </div>
-          )}
+
+            {TEST_CASES.map((testCase, index) => {
+              return (
+                <div
+                  key={`actual_case_${index}`}
+                  className={testCaseTab !== index ? "hidden" : ""}
+                >
+                  <p className={"text-gray-600 text-xs mt-2"}>numCourses = </p>
+                  <CodeText className="mt-1">{testCase.numCourses}</CodeText>
+                  <input
+                    name={`testcase[${index}][numCourses]`}
+                    value={testCase.numCourses}
+                    readOnly
+                    hidden
+                  />
+
+                  <p className="text-gray-500 text-xs mt-2">prerequisites =</p>
+                  <CodeText className="mt-1">
+                    {JSON.stringify(testCase.prerequisites)}
+                  </CodeText>
+                  <input
+                    name={`testcase[${index}][prerequisites]`}
+                    value={JSON.stringify(testCase.prerequisites)}
+                    readOnly
+                    hidden
+                  />
+                </div>
+              );
+            })}
+          </div>
 
           {tab === "testresult" && (
             <ScrollArea className="h-full pb-10">
