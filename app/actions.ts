@@ -2,7 +2,6 @@
 
 export async function runCode(state, formData: FormData) {
   const testCaseHash = parseTestCaseInput(formData);
-  console.log(testCaseHash);
   const code = formData.get("code");
 
   const res = await fetch(`http://localhost:5000/runCode`, {
@@ -13,15 +12,18 @@ export async function runCode(state, formData: FormData) {
     body: JSON.stringify({ code: code, testCaseHash }),
   });
 
-  console.log(res);
   if (!res.ok) {
-    return { output: "" };
+    return { output: "", graderOutput: undefined };
   }
 
-  const output = (await res.json()).output;
+  const jsonResponse = await res.json();
+  const output = jsonResponse.output;
   console.log(output);
 
-  return { output: output };
+  const graderOutput = jsonResponse.graderOutput;
+  console.log(graderOutput);
+
+  return { output: output, graderOutput: graderOutput };
 }
 
 function parseTestCaseInput(formData: FormData) {

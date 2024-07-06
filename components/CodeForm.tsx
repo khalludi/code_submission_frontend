@@ -14,7 +14,7 @@ const CodeEditor = dynamic(
   { ssr: false },
 );
 
-const initialState = { output: "" };
+const initialState = { output: "", graderOutput: undefined };
 
 type TabState = "testcase" | "testresult";
 type TestCaseTab = "case1" | "case2";
@@ -144,7 +144,42 @@ export default function CodeForm() {
               {isLoading ? (
                 "Loading...."
               ) : state.output ? (
-                <CodeText className="my-3">{state.output}</CodeText>
+                <>
+                  <div className="flex flex-row gap-2">
+                    {TEST_CASES.map((_, index) => {
+                      return (
+                        <button
+                          key={`result_test_case_${index}`}
+                          className={`text-sm ${testCaseTab === index ? "font-semibold bg-gray-200 px-2 py-1 rounded-lg" : ""}`}
+                          onClick={() => setTestCaseTab(index)}
+                          type="button"
+                        >
+                          Case {index + 1}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {TEST_CASES.map((testCase, index) => {
+                    return (
+                      <div
+                        key={`result_actual_case_${index}`}
+                        className={testCaseTab !== index ? "hidden" : ""}
+                      >
+                        <CodeText className="mt-1">
+                          {testCase.numCourses}
+                        </CodeText>
+                        <CodeText className="mt-1">
+                          {JSON.stringify(testCase.prerequisites)}
+                        </CodeText>
+                        <CodeText className="mt-1">{state.output}</CodeText>
+                        <CodeText className="mt-1">
+                          {state.graderOutput ? state.graderOutput[index] : ""}
+                        </CodeText>
+                      </div>
+                    );
+                  })}
+                </>
               ) : (
                 "No Output"
               )}
