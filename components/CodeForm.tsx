@@ -5,24 +5,30 @@ import { useFormState } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { runCode } from "@/app/actions";
-import CodeText from "@/components/CodeText";
 import dynamic from "next/dynamic";
+import TestCaseSection from "@/components/TestCaseSection";
+import TestResultSection from "@/components/TestResultSection";
 
 const CodeEditor = dynamic(
   () => import("@uiw/react-textarea-code-editor").then((mod) => mod.default),
   { ssr: false },
 );
 
-const initialState = { output: "" };
+export type RunCodeOutput = {
+  userOutput?: Map<string, string>;
+  graderOutput?: Map<string, string>;
+};
+const initialState: RunCodeOutput = {
+  userOutput: undefined,
+  graderOutput: undefined,
+};
 
-type TabState = "testcase" | "testresult";
-type TestCaseTab = "case1" | "case2";
+export type TabState = "testcase" | "testresult";
 
 export default function CodeForm() {
   const [state, formAction] = useFormState(runCode, initialState);
   const [isLoading, setIsLoading] = useState(false);
   const [tab, setTab] = useState<TabState>("testcase");
-  const [testCaseTab, setTestCaseTab] = useState<TestCaseTab>("case1");
   const [code, setCode] = useState(
     "class Solution:" +
       "\n  def solve(self, numCourses, prerequisites):" +
@@ -90,52 +96,11 @@ export default function CodeForm() {
         </div>
 
         <div className="px-4 pt-1 h-full">
-          {tab === "testcase" && (
-            <div className="flex flex-col">
-              <div className="flex flex-row gap-2">
-                <button
-                  className={`text-sm ${testCaseTab === "case1" ? "font-semibold bg-gray-200 px-2 py-1 rounded-lg" : ""}`}
-                  onClick={() => setTestCaseTab("case1")}
-                >
-                  Case 1
-                </button>
-                <button
-                  className={`text-sm ${testCaseTab === "case2" ? "font-semibold bg-gray-200 px-2 py-1 rounded-lg" : ""}`}
-                  onClick={() => setTestCaseTab("case2")}
-                >
-                  Case 2
-                </button>
-              </div>
-
-              {testCaseTab === "case1" && (
-                <>
-                  <p className={"text-gray-600 text-xs mt-2"}>numCourses = </p>
-                  <CodeText className="mt-1">2</CodeText>
-                  <p className="text-gray-500 text-xs mt-2">prerequisites =</p>
-                  <CodeText className="mt-1">[[1, 0]]</CodeText>
-                </>
-              )}
-
-              {testCaseTab === "case2" && (
-                <>
-                  <p className={"text-gray-600 text-xs mt-2"}>numCourses = </p>
-                  <CodeText className="mt-1">2</CodeText>
-                  <p className="text-gray-500 text-xs mt-2">prerequisites =</p>
-                  <CodeText className="mt-1">[[1, 0], [0, 1]]</CodeText>
-                </>
-              )}
-            </div>
-          )}
+          <TestCaseSection tab={tab} />
 
           {tab === "testresult" && (
             <ScrollArea className="h-full pb-10">
-              {isLoading ? (
-                "Loading...."
-              ) : state.output ? (
-                <CodeText className="my-3">{state.output}</CodeText>
-              ) : (
-                "No Output"
-              )}
+              {isLoading ? "Loading...." : <TestResultSection state={state} />}
             </ScrollArea>
           )}
         </div>
