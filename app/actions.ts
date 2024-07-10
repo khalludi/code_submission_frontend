@@ -13,17 +13,11 @@ export async function runCode(state, formData: FormData) {
   });
 
   if (!res.ok) {
-    return { output: "", graderOutput: undefined };
+    return { userOutput: "", graderOutput: undefined };
   }
 
-  const jsonResponse = await res.json();
-  const output = jsonResponse.output;
-  console.log(output);
-
-  const graderOutput = jsonResponse.graderOutput;
-  console.log(graderOutput);
-
-  return { output: output, graderOutput: graderOutput };
+  const { userOutput, graderOutput } = await res.json();
+  return { userOutput, graderOutput };
 }
 
 function parseTestCaseInput(formData: FormData) {
